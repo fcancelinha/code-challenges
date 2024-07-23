@@ -27,7 +27,6 @@ func (c *Connection) scan(ports, results chan uint16) {
 		conn, err := net.DialTimeout(c.Network, address, c.Timeout)
 		if err != nil {
 			results <- 0
-			fmt.Println(err)
 			continue
 		}
 		conn.Close()
@@ -39,9 +38,11 @@ func (c *Connection) ScanPorts() (openPorts []uint16) {
 	start, end := uint16(1), uint16(math.MaxUint16)
 	ports := make(chan uint16, c.ConcurrencyLevel)
 	results := make(chan uint16)
+	total := (end - start)
 
 	if c.Port > 0 {
 		start, end = c.Port, c.Port
+		total = 1
 	}
 
 	for i := 0; i < cap(ports); i++ {
@@ -54,8 +55,9 @@ func (c *Connection) ScanPorts() (openPorts []uint16) {
 		}
 	}()
 
-	for i := uint16(0); i < (end - start); i++ {
+	for i := uint16(1); i <= total; i++ {
 		p := <-results
+		progressBar(i, total)
 		if p != 0 {
 			openPorts = append(openPorts, p)
 		}
@@ -63,6 +65,23 @@ func (c *Connection) ScanPorts() (openPorts []uint16) {
 
 	close(ports)
 	close(results)
+	fmt.Println()
 
 	return
+}
+
+func progressBar(current, total uint16) {
+	bar := 100
+	percentage := (current * 100) / total
+	progress := int(float64(bar) * (float64(current) / float64(total)))
+
+	fmt.Printf("\r[")
+	for i := 0; i < bar; i++ {
+		if i < progress {
+			fmt.Print("=")
+		} else {
+			fmt.Print(" ")
+		}
+	}
+	fmt.Printf("] %d%%", percentage)
 }
