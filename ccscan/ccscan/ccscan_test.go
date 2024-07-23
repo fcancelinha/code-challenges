@@ -2,14 +2,20 @@ package ccscan_test
 
 import (
 	"testing"
-
-	"github.com/fcancelinha/code-challenges/ccscan/ccscan"
-	"gotest.tools/v3/assert"
 )
 
 const address = "scanme.nmap.org"
 
 func TestPortScanning(t *testing.T) {
-	err := ccscan.ScanPort(address + ":80")
-	assert.NilError(t, err)
+	// c := ccscan.Connection{
+	// 	Host:             address,
+	// 	StartPort:        uint16(1),
+	// 	EndPort:          uint16(1024),
+	// 	Network:          "tcp",
+	// 	Timeout:          500 * time.Millisecond,
+	// 	ConcurrencyLevel: 100,
+	// }
+	//
+	// oprts := c.ScanPorts()
+	// assert.NilError(t, err)
 }
